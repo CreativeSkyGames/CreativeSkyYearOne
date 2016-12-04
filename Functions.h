@@ -1,4 +1,4 @@
-//This header includes the functions that will be called upon in the gamemanager class
+//This header includes the functions that will be called Uon in the gamemanager class
 //It also includes classes that will be used in the gamemanager header file
 #include <iostream>
 #include <time.h>
@@ -18,108 +18,104 @@ void Rules()
 
 }
 
-enum eDir { STOP = 0, LEFT = 1, UPLEFT = 2, DOWNLEFT = 3, RIGHT = 4, UPRIGHT = 5, DOWNRIGHT = 6 };
-//Used to change the direction of the ball
+enum eDir { S = 0, L = 1, UL = 2, DL = 3, R = 4, UR = 5, DR = 6 };
+//Used to change the Direc of the ball
 
-class cBall
+class Pellet
 //The ball class, controls the ball for pong
 {
 private:
 	int x, y;
-	int originalX, originalY;
+	int startX, startY;
 //Stores the original 'X' and 'Y' positions
-	eDir direction;
+	eDir Direc;
 //Calls the function into the class
 
 public:
-	cBall(int posX, int posY)
+	Pellet(int posX, int posY)
 	{
-		originalX = posX;
-		originalY - posY;
+		startX = posX;
+		startY - posY;
 		x = posX, y = posY;
-		direction = STOP;
+		Direc = S;
 	}
 	void Reset()
 	//A function resets the ball
 	{
-		x = originalX, y = originalY;
-		direction = STOP;
+		x = startX, y = startY;
+		Direc = S;
 	}
 
-	void changeDirection(eDir d)
-	//Function used to creat a change of direction
+	void changeDirec(eDir d)
+	//Function used to creat a change of Direc
 	{
-		direction = d;
+		Direc = d;
 	}
 
-	void randomDirection()
-	//Function to randomly change the direction
+	void randomDirec()
+	//Function to randomly change the Direc
 	{
-		direction = (eDir)((rand() % 6) + 1);
+		Direc = (eDir)((rand() % 6) + 1);
 	}
 	inline int getX() { return x; }
 	inline int getY() { return y; }
-	inline eDir getDirection() { return direction; }
+	inline eDir getDirec() { return Direc; }
 	void Move()
 	//Function to move the ball
 	{
-		switch (direction)
+		switch (Direc)
 		{
-		case STOP:
+		case S:
 			break;
-		case LEFT:
+		case L:
 			x--;
 			break;
-		case RIGHT:
+		case R:
 			x++;
 			break;
-		case UPLEFT:
+		case UL:
 			x--; y--;
 			break;
-		case DOWNLEFT:
+		case DL:
 			x--; y++;
 			break;
-		case UPRIGHT:
+		case UR:
 			x++; y--;
 			break;
-		case DOWNRIGHT:
+		case DR:
 			x++; y++;
 			break;
 		default:
 			break;
 		};
 	}
-	friend ostream & operator<<(ostream & o, cBall c)
-	{
-		o << "Ball [" << c.x << "," << c.y << "][" << c.direction << "]";
-		return o;
-	}
+	
 };
-class cPaddle
+class Human
 //The paddle class for the player controled paddle
 {
 private:
 	int x, y;
-	int originalX, originalY;
+	int startX, startY;
 public:
-	cPaddle()
+	Human()
 //Setting the 'X' and 'Y' to zero
 	{
 		x = y = 0;
 	}
-	cPaddle(int posX, int posY) : cPaddle()
+	Human(int posX, int posY) : Human()
 //Used to create functions to be used later
 	{
-		originalX = posX;
-		originalY = posY;
+		startX = posX;
+		startY = posY;
 		x = posX;
 		y = posY;
 	}
-	inline void Reset() { x = originalX; y = originalY; }
+	inline void Reset() { x = startX; y = startY; }
 	inline int getX() { return x; }
 	inline int getY() { return y; }
-	inline void moveUp() { y--; }
-	inline void moveDown() { y++; }
+	inline void moveU() { y--; }
+	inline void moveD() { y++; }
 };
 
 class cAI
@@ -127,7 +123,7 @@ class cAI
 {
 private:
 	int x, y;
-	int originalX, originalY;
+	int startX, startY;
 	
 public:
 	
@@ -138,12 +134,12 @@ public:
 	}
 	cAI(int posX, int posY) : cAI()
 	{
-		originalX = posX;
-		originalY = posY;
+		startX = posX;
+		startY = posY;
 		x = posX;
 		y = posY;
 	}
-	inline void Reset() { x = originalX; y = originalY; }
+	inline void Reset() { x = startX; y = startY; }
 	inline int getX() { return x; }
 	inline int getY() { return y; }
 	
@@ -179,6 +175,3 @@ public:
 		
 	}
 };
-
-
-

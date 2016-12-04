@@ -8,11 +8,11 @@ class cGameManager
 private:
 	
 	int width, height;
-	int score1, score2;
-	char up1, down1, up2, down2;
+	int points, score2;
+	char U, D, U2, D2;
 	bool quit;
-	cBall * ball;
-	cPaddle * player1;
+	Pellet * ball;
+	Human * player;
 	cAI * ai;
 public:
 	void gotoxy(int column, int line)
@@ -25,36 +25,38 @@ public:
 	}
 
 	cGameManager(int w, int h)
-	//Setting all of the important features of the game (i.e. button for moving up)
+	//Setting all of the important features of the game (i.e. button for moving U)
 	{
 		srand(time(0));
 		quit = false;
-		up1 = 'w';
-		down1 = 's';
-		score1 = 0;
+		U = 'w';
+		D = 's';
+		points = 0;
 		width = w; height = h;
-		ball = new cBall(w / 2, h / 2);
-		player1 = new cPaddle(1, h / 2 - 3);
+		ball = new Pellet(w / 2, h / 2);
+		player = new Human(1, h / 2 - 3);
 		ai = new cAI(w - 2, h / 2 - 3);
 	}
 
 	cGameManager()
 	{
-		delete ball, player1, ai;
+		delete ball, player, ai;
 //Used to reset the game after a point is given
 	}
 
 	//functions to control the score
-	void ScoreUp(cPaddle * player)
+	//ScoreU means score up
+	void ScoreU(Human * player)
 	{
-		score1++;
+		points++;
 	}
-	void ScoreDown(cPaddle * player)
+	//ScoreD means score down
+	void ScoreD(Human * player)
 	{
-		score1--;
+		points--;
 	}
-void Draw()
-//Function to draw the game
+void Board()
+//Function to Board the game
 {
 	gotoxy(0, 0);
 	for (int i = 0; i < width + 2; i++)
@@ -72,26 +74,26 @@ void Draw()
 		{
 			int ballx = ball->getX();
 			int bally = ball->getY();
-			int player1x = player1->getX();
+			int playerx = player->getX();
 			int aix = ai->getX();
-			int player1y = player1->getY();
+			int playery = player->getY();
 			int aiy = ai->getY();
 
 			if (j == 0)
 				cout << "\xB2";
-		//used to draw the board
+		//used to Board the board
 
 			if (ballx == j && bally == i)
 				cout << "o";
 
-		//used to draw the paddles
-			else if (player1x == j && player1y == i)
+		//used to Board the paddles
+			else if (playerx == j && playery == i)
 				cout << "\xDB";
-			else if (player1x == j && player1y + 1 == i)
+			else if (playerx == j && playery + 1 == i)
 				cout << "\xDB";
-			else if (player1x == j && player1y + 2 == i)
+			else if (playerx == j && playery + 2 == i)
 				cout << "\xDB";
-			else if (player1x == j && player1y + 3 == i)
+			else if (playerx == j && playery + 3 == i)
 				cout << "\xDB";
 			else if (aix == j && aiy == i)
 				cout << "\xDB";
@@ -126,18 +128,18 @@ void Draw()
 
 	for (int i = 0; i < width + 2; i++)
 		cout << "\xB2";
-	//used to draw the border
+	//used to Board the border
 	cout << endl;
 }
-void Input()
-//function for keyboard input
+void Log()
+//function for keyboard Log
 {
 	ball->Move();
 
 	int ballx = ball->getX();
 	int bally = ball->getY();
-	int player1x = player1->getX();
-	int player1y = player1->getY();
+	int playerx = player->getX();
+	int playery = player->getY();
 	int aix = ai->getX();
 	int aiy = ai->getY();
 	
@@ -145,18 +147,18 @@ void Input()
 	if (_kbhit())
 	{
 		char current = _getch();
-		if (current == up1)
-			if (player1y > 0)
-				player1->moveUp();
-		if (current == down1)
-			if (player1y + 4 < height)
-				player1->moveDown();
-		if (current == up1)
+		if (current == U)
+			if (playery > 0)
+				player->moveU();
+		if (current == D)
+			if (playery + 4 < height)
+				player->moveD();
+		if (current == U)
 				ai->move();
-		if (current == down1)
+		if (current == D)
 				ai->move();
-		if (ball->getDirection() == STOP)
-			ball->randomDirection();
+		if (ball->getDirec() == S)
+			ball->randomDirec();
 
 		if (current == 'q')
 			quit = true;
@@ -168,42 +170,42 @@ void Input()
 
 }
 
-void Logic()
-//The function for creating the boarder, deciding on the ball direction, and if the player won
+void Rational()
+//The function for creating the boarder, deciding on the ball Direc, and if the player won
 {
 	int ballx = ball->getX();
 	int bally = ball->getY();
-	int player1x = player1->getX();
+	int playerx = player->getX();
 	int aix = ai->getX();
-	int player1y = player1->getY();
+	int playery = player->getY();
 	int aiy = ai->getY();
 
 
 
 	for (int i = 0; i < 4; i++)
-		if (ballx == player1x + 1)
-			if (bally == player1y + i)
-				ball->changeDirection((eDir)((rand() % 3) + 4));
+		if (ballx == playerx + 1)
+			if (bally == playery + i)
+				ball->changeDirec((eDir)((rand() % 3) + 4));
 
 	for (int i = 0; i < 12; i++)
 		if (ballx == aix - 1)
 			if (bally == aiy + i)
-				ball->changeDirection((eDir)((rand() % 3) + 1));
+				ball->changeDirec((eDir)((rand() % 3) + 1));
 
 	if (bally == height - 1)
-		ball->changeDirection(ball->getDirection() == DOWNRIGHT ? UPRIGHT : UPLEFT);
+		ball->changeDirec(ball->getDirec() == DR ? UR : UL);
 
 	if (bally == 0)
-		ball->changeDirection(ball->getDirection() == UPRIGHT ? DOWNRIGHT : DOWNLEFT);
+		ball->changeDirec(ball->getDirec() == UR ? DR : DL);
 
 	if (ballx == width - 1)
 	{
-		ScoreUp(player1);
+		ScoreU(player);
 		cout << "\t\t " << "You win" << endl;
 	}
 	else if (ballx == 0)
 	{
-		ScoreDown(player1);
+		ScoreD(player);
 		cout << "\t\t " << "You lose" << endl;
 	}
 }
@@ -211,11 +213,11 @@ void Run()
 //function for running the game
 {
 	Rules();
-	while (score1 == 0)
+	while (points == 0)
 	{
-		Draw();
-		Input();
-		Logic();
+		Board();
+		Log();
+		Rational();
 	}
 
 }
